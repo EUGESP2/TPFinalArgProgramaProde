@@ -5,6 +5,7 @@ import fixture.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,66 @@ public class App
 {
     public static void main( String[] args )
     {
-        
+        Connection conexion = null;
+        Statement consulta = null;
+        try {
+            conexion = DriverManager.getConnection("jdbc:mysql://localhost:3306/tp_integrador","root","AdminAdmin");
+            System.out.println("Creating statement...");
+            consulta = conexion.createStatement();
+            String partidos;
+           // String pronosticos;
+            partidos = "SELECT id, ronda, equipo1, goles1, goles2,equipo2 FROM tp_integrador.resultados";
+         //   pronosticos =  "SELECT participante, equipo1, gana1,empata,gana2, equipo2";
+            //En la variable resultado obtendremos las distintas filas que nos devolvió la base.
+           // ResultSet prode = consulta.executeQuery(pronosticos);
+           ResultSet resultado = consulta.executeQuery(partidos);
+         //   while (prode.next()){
+          //      String nombre = prode.getString("participante");
+
+
+           // }
+            // Obtener las distintas filas de la consulta
+            while (resultado.next()) {
+                // Pbtener el valor de cada columna
+                int id = resultado.getInt("id");
+                int ronda = resultado.getInt("ronda");
+                String equipo1 = resultado.getString("equipo1");
+                int goles1 = resultado.getInt("goles1");
+                int goles2 = resultado.getInt("" +
+                        "goles2");
+                String equipo2 = resultado.getString("equipo2");
+
+                System.out.println("Mostrar los valores obtenidos");
+                System.out.print("id: " + id);
+                System.out.print("ronda: " + ronda);
+                System.out.print(", Equipo1: " + equipo1);
+                System.out.print(", Goles : " + goles1);
+                System.out.println(", goles: " + goles2);
+                System.out.print(", Equipo2: " + equipo2);
+
+                System.out.println("     Muestra los pronosticos   ");
+            }
+            // Esto se utiliza par cerrar la conexión con la base de datos
+            resultado.close();
+            consulta.close();
+            conexion.close();
+        } catch (SQLException se) {
+            // Execpción ante problemas de conexión
+            se.printStackTrace();
+        } finally {
+            // Esta sentencia es para que ante un problema con la base igual se cierren las conexiones
+            try {
+                if (consulta != null)
+                    consulta.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conexion != null)
+                    conexion.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
 
         //        "C:\\Users\\eugen\\Desktop\\curso java\\TPArgentinaPrograma\\ArchivosTP\\Resultados.csv" parameter 0
 //        "C:\\Users\\eugen\\Desktop\\curso java\\TPArgentinaPrograma\\ArchivosTP\\Pronostico.csv" parameter 1
